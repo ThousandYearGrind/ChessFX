@@ -3,12 +3,11 @@ package com.example.chessfx.pieces;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
-public class Pawn extends Piece {
-    public Pawn(Tile[][] board, Tile tile, Player color) {
-        super(board, tile, PieceType.PAWN, color);
+public class Rook extends Piece {
+    public Rook(Tile[][] board, Tile t, Player color) {
+        super(board, t, PieceType.ROOK, color);
     }
 
-    // TODO: implement canMove() in Pawn
     @Override
     public boolean canMove(int row, int col) {
 
@@ -16,6 +15,6 @@ public class Pawn extends Piece {
 
     @Override
     public String toString() {
-        return "P";
+        return "R";
     }
 }
