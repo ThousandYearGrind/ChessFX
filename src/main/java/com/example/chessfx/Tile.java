@@ -20,6 +20,10 @@ public class Tile {
         this.isDark = isDark;
     }
 
+    public boolean isDark() {
+        return isDark;
+    }
+
     public void setPiece(Piece p) {
         piece = p;
     }
@@ -28,4 +32,7 @@ public class Tile {
         return piece;
     }
 
+    public static int getWidth() {
+        return width;
+    }
 }
