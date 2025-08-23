@@ -1,11 +1,7 @@
 package com.example.chessfx.pieces;
 
-import com.example.chessfx.Board;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
-import javafx.scene.image.ImageView;
-
-import java.util.ArrayList;
 
 public abstract class Piece {
 
@@ -18,28 +14,29 @@ public abstract class Piece {
      * TODO: move the piece (capture if there is an enemy piece is there)
      */
 
-    private Board board;
+    private final Tile[][] board;
     private Tile tile;
-    private Player color;
+    private final Player color;
     private final PieceType type;
 
-    public Piece(Board board, Tile tile, PieceType type, Player color) {
+    public Piece(Tile[][] board, Tile tile, PieceType type, Player color) {
         this.board = board;
         this.tile = tile;
         this.color = color;
         this.type = type;
     }
 
-    public abstract void canMove();
+    public abstract boolean canMove(int row, int col);
 
-    // TODO: implement move
-    public void move(int row, int col) {
-
-    }
-
-    // TODO: implement capture
-    public void capture(int row, int col) {
-
+    public boolean move(int row, int col) {
+        if (canMove(row, col)) {
+            Tile target = board[row][col];
+            target.setPiece(this);
+            tile.setPiece(null);
+            tile = target;
+            return true;
+        }
+        return false;
     }
 
     public Player getColor() {
@@ -52,5 +49,10 @@ public abstract class Piece {
 
     public Tile getTile() {
         return tile;
+    }
+
+    @Override
+    public String toString() {
+        return "X";
     }
 }
