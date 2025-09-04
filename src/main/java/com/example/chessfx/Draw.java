@@ -16,9 +16,13 @@ public class Draw {
     // make a pane with the board
     Board b;
     Tile[][] board;
-    public Pane drawBoard(Board b /*, boolean flip*/) {
+
+    public Draw(Board b) {
         this.b = b;
         board = b.getBoard();
+    }
+
+    public Pane drawBoard() {
         Pane boardImage = new Pane();
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -54,7 +58,6 @@ public class Draw {
         path += p.getType().toString().toLowerCase();
         path += ".png";
         System.out.println(path);
-        Draw d = new Draw();
         ImageView pcImg = new ImageView(String.valueOf(this.getClass().getResource(path)));
         pcImg.setPickOnBounds(true);
         makeDraggable(pcImg);

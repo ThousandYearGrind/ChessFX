@@ -17,8 +17,8 @@ public class Board {
      */
     public Board(Pane pane) {
         this.pane = pane;
-        this.d = new Draw();
         board = new Tile[8][8];
+        this.d = new Draw(this);
         initTiles();
         initPieces();
     }
@@ -73,18 +73,18 @@ public class Board {
         }
     }
 
-    public void printBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(board[i][j].getPiece() + " ");
-            }
-            System.out.println();
-        }
-    }
+//    public void printBoard() {
+//        for (int i = 0; i < 8; i++) {
+//            for (int j = 0; j < 8; j++) {
+//                System.out.print(board[i][j].getPiece() + " ");
+//            }
+//            System.out.println();
+//        }
+//    }
 
    public Pane getGUIBoard() {
        pane.getChildren().clear();
-       pane.getChildren().add(d.drawBoard(this));
+       pane.getChildren().add(d.drawBoard());
        return pane;
    }
 
