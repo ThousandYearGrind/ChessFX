@@ -26,6 +26,7 @@ public class Board {
         this.d = new Draw(this);
         initTiles();
         initPieces();
+        draw();
     }
 
     /**

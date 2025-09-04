@@ -13,7 +13,6 @@ public class ChessFX extends Application {
         Pane pane = new Pane();
         Scene scene = new Scene(pane, 800, 800);
         b = new Board(pane);
-        b.draw();
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
