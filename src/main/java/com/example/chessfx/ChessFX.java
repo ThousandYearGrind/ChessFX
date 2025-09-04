@@ -9,19 +9,18 @@ import javafx.stage.Stage;
 
 public class ChessFX extends Application {
 
+    private Board b;
+
     public void start(Stage stage) {
-        stage.setScene(new Scene(getContent(), 800, 800));
+        Pane pane = new Pane();
+        Scene scene = new Scene(pane, 800, 800);
+        b = new Board(pane);
+        b.getGUIBoard();
+        stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
     }
 
-    private Parent getContent() {
-        Pane root = new Pane();
-        Board b = new Board();
-        Draw d = new Draw();
-        root = d.drawBoard(b.getBoard());
-        return root;
-    }
 
     public static void main(String[] args) {
         launch(args);

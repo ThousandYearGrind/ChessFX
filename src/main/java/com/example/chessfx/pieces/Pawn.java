@@ -11,7 +11,7 @@ public class Pawn extends Piece {
     // TODO: implement canMove() in Pawn
     @Override
     public boolean canMove(int row, int col) {
-
+        return false;
     }
 
     @Override

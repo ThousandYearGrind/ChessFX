@@ -1,22 +1,23 @@
 package com.example.chessfx;
 
 import com.example.chessfx.pieces.*;
-import javafx.scene.Node;
-import javafx.scene.image.ImageView;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-
-import java.util.*;
+import javafx.stage.Stage;
 
 public class Board {
 
+    private final Pane pane;
+    private Draw d;
     private final Tile[][] board;
 
     /* functionality:
      * contain a 2D board of tiles with rows and columns
      * when a board is constructed, init a board of tiles and default pieces for both colors on the appropriate tiles
      */
-    public Board() {
+    public Board(Pane pane) {
+        this.pane = pane;
+        this.d = new Draw();
         board = new Tile[8][8];
         initTiles();
         initPieces();
@@ -80,6 +81,12 @@ public class Board {
             System.out.println();
         }
     }
+
+   public Pane getGUIBoard() {
+       pane.getChildren().clear();
+       pane.getChildren().add(d.drawBoard(this));
+       return pane;
+   }
 
     public Tile[][] getBoard() {
         return board;
