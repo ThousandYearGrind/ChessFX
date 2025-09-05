@@ -42,15 +42,12 @@ public abstract class Piece {
         return other.color == this.color;
     }
 
-    public boolean move(int row, int col) {
-        if (canMove(row, col)) {
-            Tile target = board[row][col];
-            target.setPiece(this);
-            tile.setPiece(null);
-            tile = target;
-            return true;
-        }
-        return false;
+    public void move(int row, int col) {
+        if (!canMove(row, col)) return;
+        Tile target = board[row][col];
+        target.setPiece(this);
+        tile.setPiece(null);
+        tile = target;
     }
 
     public Player getColor() {
