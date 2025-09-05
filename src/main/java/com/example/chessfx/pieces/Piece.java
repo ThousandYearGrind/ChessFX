@@ -52,10 +52,14 @@ public abstract class Piece {
     }
 
     public void move(int row, int col) {
-        if (!canMove(row, col)) return;
+        if (!canMove(row, col)) {
+            b.draw();
+            return;
+        }
         Tile target = board[row][col];
 
         if (type == PieceType.PAWN) {
+            ((Pawn) this).setMoved();
             b.resetEnPassant(target);
         } else {
             b.resetEnPassant(null);
@@ -64,6 +68,8 @@ public abstract class Piece {
         target.setPiece(this);
         tile.setPiece(null);
         tile = target;
+
+        b.draw();
     }
 
     protected boolean isOccupied(int row, int col) {

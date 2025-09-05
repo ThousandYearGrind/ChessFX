@@ -1,6 +1,7 @@
 module com.example.chessfx {
     requires javafx.controls;
     requires javafx.fxml;
+    requires jdk.xml.dom;
 
 
     opens com.example.chessfx to javafx.fxml;

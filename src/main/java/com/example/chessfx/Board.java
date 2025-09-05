@@ -1,19 +1,29 @@
 package com.example.chessfx;
 
 import com.example.chessfx.pieces.*;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.w3c.dom.css.Rect;
+
+import static java.lang.Thread.sleep;
 
 public class Board {
 
-    private final Pane pane;
+    public final BorderPane pane;
     private final Draw d;
     private final Tile[][] board;
     private Tile enPassantTile;
     private Piece enPassantPiece;
+
+
+    //TODO: implement check
+    //TODO: implement checkmate
 
     /**
      * set the pane to display in
@@ -21,11 +31,12 @@ public class Board {
      * create the Draw object based on the board to
      * @param pane - the pane the board will be displayed in
      */
-    public Board(Pane pane) {
+    public Board(BorderPane pane) {
         this.pane = pane;
         board = new Tile[8][8];
         // Draw must be constructed after board is initialized (has a reference to board
         this.d = new Draw();
+        pane.setCenter(new Pane());
         initTiles();
         initPieces();
         draw();
@@ -106,10 +117,12 @@ public class Board {
      * > first clear the current GUI display <br>
      * > add each element in the board again to reflect any changes that were made <br>
      */
-    private void draw() {
-       pane.getChildren().clear();
-       pane.getChildren().add(d.drawBoard());
+    public void draw() {
+        ((Pane) pane.getCenter()).getChildren().clear();
+        pane.setCenter(d.drawBoard());
     }
+
+
 
     /**
      * @return the 2D array of Tile objects representing the board
@@ -154,7 +167,6 @@ public class Board {
                     boardImage.getChildren().add(tileRectangle);
                 }
             }
-
             for (int row = 0; row < 8; row++) {
                 for (int col = 0; col < 8; col++) {
                     Tile t = board[row][col];
@@ -185,6 +197,7 @@ public class Board {
 
         /**
          * draws a tile with the right color and position in the parent
+         *
          * @param t
          * @return
          */
@@ -202,6 +215,7 @@ public class Board {
 
         private int guiRow, guiCol, endRow, endCol;
         private Piece currentPiece;
+
         private void makeDraggable(Node... s) {
             for (Node node : s) {
                 node.setOnMousePressed(e -> {
@@ -225,7 +239,7 @@ public class Board {
                     node.setTranslateX(endCol * Tile.getWidth());
                     node.setTranslateY(endRow * Tile.getWidth());
                     currentPiece.move(endRow, endCol);
-                    b.draw();
+//                    b.draw();
                     System.out.println(endRow + ":" + endCol);
                 });
             }
