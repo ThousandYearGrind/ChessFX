@@ -10,8 +10,8 @@ public abstract class Piece {
      * get the tile that the piece is on
      * get the color of the piece
      * get the type of the piece
-     * TODO: abstract method to check if a tile is a valid move
-     * TODO: move the piece (capture if there is an enemy piece is there)
+     * abstract method to check if a tile is a valid move
+     * move the piece (capture if there is an enemy piece is there)
      */
 
     private final Tile[][] board;
@@ -19,6 +19,12 @@ public abstract class Piece {
     private final Player color;
     private final PieceType type;
 
+    /**
+     * @param board the 2D Tile array that contains the Tile that the Piece is in
+     * @param tile the Tile that the piece is in
+     * @param type the type of piece (e.g. Rook, Queen, Pawn...) that the piece is
+     * @param color the player color of the piece (black/white)
+     */
     public Piece(Tile[][] board, Tile tile, PieceType type, Player color) {
         this.board = board;
         this.tile = tile;
@@ -26,17 +32,21 @@ public abstract class Piece {
         this.type = type;
     }
 
-    public abstract boolean canMove(int row, int col);
+    public boolean canMove(int row, int col) {
+        Piece target = board[row][col].getPiece();
+        if (target != null) System.out.println(target.toString());
+        return target == null || target.color != color;
+    }
 
     public boolean move(int row, int col) {
-//        if (canMove(row, col)) {
+        if (canMove(row, col)) {
             Tile target = board[row][col];
             target.setPiece(this);
             tile.setPiece(null);
             tile = target;
             return true;
-//        }
-//        return false;
+        }
+        return false;
     }
 
     public Player getColor() {

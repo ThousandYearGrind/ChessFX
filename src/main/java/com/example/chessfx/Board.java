@@ -23,7 +23,7 @@ public class Board {
         this.pane = pane;
         board = new Tile[8][8];
         // Draw must be constructed after board is initialized (has a reference to board
-        this.d = new Draw(this);
+        this.d = new Draw();
         initTiles();
         initPieces();
         draw();
@@ -101,7 +101,7 @@ public class Board {
 //    }
 
     /**
-     * > first clear the current GUI display of Nodes <br>
+     * > first clear the current GUI display <br>
      * > add each element in the board again to reflect any changes that were made <br>
      */
     private void draw() {
@@ -109,19 +109,17 @@ public class Board {
        pane.getChildren().add(d.drawBoard());
     }
 
+    /**
+     * @return the 2D array of Tile objects representing the board
+     */
     public Tile[][] getBoard() {
         return board;
     }
 
-    private static class Draw {
+    private class Draw {
         // make a pane with the board
-        Board b;
-        Tile[][] board;
-
-        public Draw(Board b) {
-            this.b = b;
-            board = b.getBoard();
-        }
+        Board b = Board.this;
+        Tile[][] board = b.getBoard();
 
         public Pane drawBoard() {
             Pane boardImage = new Pane();
@@ -149,7 +147,6 @@ public class Board {
             return boardImage;
         }
 
-        // make an ImageView of the Piece
         private ImageView drawPiece(Piece p) {
             String path = "/pieceImages/";
             if (p.getColor() == Player.WHITE)
@@ -158,14 +155,17 @@ public class Board {
                 path += "b-";
             path += p.getType().toString().toLowerCase();
             path += ".png";
-            System.out.println(path);
             ImageView pcImg = new ImageView(String.valueOf(this.getClass().getResource(path)));
             pcImg.setPickOnBounds(true);
             makeDraggable(pcImg);
             return pcImg;
         }
 
-        // make a rectangle of the Tile
+        /**
+         * draws a tile with the right color and position in the parent
+         * @param t
+         * @return
+         */
         private Rectangle drawTile(Tile t) {
             Rectangle rect;
             if (t.isDark()) {
