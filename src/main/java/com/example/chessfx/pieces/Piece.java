@@ -56,6 +56,7 @@ public abstract class Piece {
         Tile target = board[row][col];
 
         if (type == PieceType.PAWN) {
+            ((Pawn) this).setMoved();
             b.resetEnPassant(target);
         } else {
             b.resetEnPassant(null);

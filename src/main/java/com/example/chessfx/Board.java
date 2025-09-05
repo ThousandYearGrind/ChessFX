@@ -15,6 +15,10 @@ public class Board {
     private Tile enPassantTile;
     private Piece enPassantPiece;
 
+
+    //TODO: implement check
+    //TODO: implement checkmate
+
     /**
      * set the pane to display in
      * initialize 8x8 array of Tile objects <br>

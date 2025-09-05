@@ -6,7 +6,6 @@ import com.example.chessfx.Tile;
 
 public class Pawn extends Piece {
 
-    // TODO: figure out en passant
     private boolean firstMove;
     private boolean enPassant;
     private int direction;
@@ -17,7 +16,6 @@ public class Pawn extends Piece {
         firstMove = true;
     }
 
-    // TODO: implement canMove() in Pawn
     @Override
     public boolean canMove(int row, int col) {
         if (!super.canMove(row, col)) return false;
@@ -42,10 +40,13 @@ public class Pawn extends Piece {
             enPassant = false;
         }
 
-        firstMove = false;
         if (color == Player.WHITE && tile.getRow() == 7 || color == Player.BLACK && tile.getRow() == 0) {
             promote();
         }
+    }
+
+    public void setMoved() {
+        firstMove = false;
     }
 
     // TODO: Fully implement promote
