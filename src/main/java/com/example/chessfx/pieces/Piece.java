@@ -1,5 +1,6 @@
 package com.example.chessfx.pieces;
 
+import com.example.chessfx.Board;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
@@ -14,27 +15,30 @@ public abstract class Piece {
      * move the piece (capture if there is an enemy piece is there)
      */
 
+    protected final Board b;
     protected final Tile[][] board;
     protected Tile tile;
     protected final Player color;
     protected final PieceType type;
 
     /**
-     * @param board the 2D Tile array that contains the Tile that the Piece is in
-     * @param tile the Tile that the piece is in
-     * @param type the type of piece (e.g. Rook, Queen, Pawn...) that the piece is
+     * @param b     the 2D Tile array that contains the Tile that the Piece is in
+     * @param tile  the Tile that the piece is in
+     * @param type  the type of piece (e.g. Rook, Queen, Pawn...) that the piece is
      * @param color the player color of the piece (black/white)
      */
-    public Piece(Tile[][] board, Tile tile, PieceType type, Player color) {
-        this.board = board;
+    public Piece(Board b, Tile tile, PieceType type, Player color) {
+        this.b = b;
+        board = b.getBoard();
         this.tile = tile;
         this.color = color;
         this.type = type;
     }
 
-    protected boolean canMove(int row, int col) {
+    public boolean canMove(int row, int col) {
         if (row < 0 || row >= 8 || col < 0 || col >= 8) return false;
         Piece target = piece(row, col);
+        System.out.println(sameColor(target));
         if (sameColor(target)) return false;
         return true;
     }
@@ -50,6 +54,13 @@ public abstract class Piece {
     public void move(int row, int col) {
         if (!canMove(row, col)) return;
         Tile target = board[row][col];
+
+        if (type == PieceType.PAWN) {
+            b.resetEnPassant(target);
+        } else {
+            b.resetEnPassant(null);
+        }
+
         target.setPiece(this);
         tile.setPiece(null);
         tile = target;
@@ -59,6 +70,40 @@ public abstract class Piece {
         return piece(row, col) != null;
     }
 
+    protected boolean canMoveCardinally(int row, int col) {
+        int R = tile.getRow();
+        int C = tile.getCol();
+        int deltaR = row - R;
+        int deltaC = col - C;
+        int dirR = deltaR == 0 ? 0 : deltaR / Math.abs(deltaR);
+        int dirC = deltaC == 0 ? 0 : deltaC / Math.abs(deltaC);
+
+        if (dirR * dirC == 0) {
+            for (int i = 1; i < Math.max(deltaR * dirR, deltaC * dirC); i++) {
+                if (isOccupied(R + dirR * i, C + dirC * i)) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean canMoveOrdinally(int row, int col) {
+        int R = tile.getRow();
+        int C = tile.getCol();
+        int deltaR = (row - R);
+        int deltaC = (col - C);
+        int dirR = deltaR == 0 ? 0 : deltaR / Math.abs(deltaR);
+        int dirC = deltaC == 0 ? 0 : deltaC / Math.abs(deltaC);
+
+        if (deltaR * dirR == deltaC * dirC) {
+            for (int i = 1; i < deltaR * dirR; i++) {
+                if (isOccupied(R + i * dirR, C + i * dirC)) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     public Player getColor() {
         return color;
     }
@@ -66,12 +111,11 @@ public abstract class Piece {
     public PieceType getType() {
         return type;
     }
-/*
-maybe use later
+
     public Tile getTile() {
         return tile;
     }
- */
+
     @Override
     public String toString() {
         return "X";

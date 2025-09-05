@@ -1,5 +1,6 @@
 package com.example.chessfx.pieces;
 
+import com.example.chessfx.Board;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
@@ -7,25 +8,26 @@ public class Pawn extends Piece {
 
     // TODO: figure out en passant
     private boolean firstMove;
+    private boolean enPassant;
     private int direction;
 
-    public Pawn(Tile[][] board, Tile tile, Player color) {
-        super(board, tile, PieceType.PAWN, color);
+    public Pawn(Board b, Tile t, Player color) {
+        super(b, t, PieceType.PAWN, color);
         direction = color == Player.WHITE ? 1 : -1;
         firstMove = true;
     }
 
     // TODO: implement canMove() in Pawn
     @Override
-    protected boolean canMove(int row, int col) {
+    public boolean canMove(int row, int col) {
         if (!super.canMove(row, col)) return false;
-
-        if (row == tile.getRow() + 2 * direction && col == tile.getCol()) {
+        if (firstMove && row == tile.getRow() + 2 * direction && col == tile.getCol()) {
+            enPassant = true;
             return !(isOccupied(row, col) || isOccupied(row - direction, col));
         } else if (row == tile.getRow() + direction && col == tile.getCol()) {
             return !isOccupied(row, col);
         } else if (row == tile.getRow() + direction && Math.abs(col - tile.getCol()) == 1) {
-            return isOccupied(row, col);
+            return isOccupied(row, col) || b.isEnPassantTile(board[row][col]);
         }
 
         return false;
@@ -34,11 +36,13 @@ public class Pawn extends Piece {
     @Override
     public void move(int row, int col) {
         super.move(row, col);
-        if (color == Player.WHITE && tile.getRow() == 7) {
-            promote();
+
+        if (enPassant) {
+            b.setEnPassant(this, board[row-direction][col]);
         }
 
-        if (color == Player.BLACK && tile.getRow() == 0) {
+        firstMove = false;
+        if (color == Player.WHITE && tile.getRow() == 7 || color == Player.BLACK && tile.getRow() == 0) {
             promote();
         }
     }
@@ -46,7 +50,7 @@ public class Pawn extends Piece {
     // TODO: Fully implement promote
     private void promote() {
         Tile cur = board[tile.getRow()][tile.getCol()];
-        cur.setPiece(new Queen(board, tile, color));
+        cur.setPiece(new Queen(b, tile, color));
     }
 
     @Override

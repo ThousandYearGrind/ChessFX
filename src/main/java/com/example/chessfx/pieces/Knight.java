@@ -1,12 +1,13 @@
 package com.example.chessfx.pieces;
 
+import com.example.chessfx.Board;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
 public class Knight extends Piece {
 
-    public Knight(Tile[][] board, Tile t, Player color) {
-        super(board, t, PieceType.KNIGHT, color);
+    public Knight(Board b, Tile t, Player color) {
+        super(b, t, PieceType.KNIGHT, color);
     }
 
     @Override
@@ -15,24 +16,11 @@ public class Knight extends Piece {
 
         int R = tile.getRow();
         int C = tile.getCol();
+        int deltaR = row - R;
+        int deltaC = col - C;
 
-        if (row == R - 1 && col == C + 2) {
-            return true;
-        } else if (row == R - 1 && col == C - 2) {
-            return true;
-        } else if (row == R + 1 && col == C + 2) {
-            return true;
-        } else if (row == R + 1 && col == C - 2) {
-            return true;
-        } else if (row == R - 2 && col == C + 1) {
-            return true;
-        } else if (row == R - 2 && col == C - 1) {
-            return true;
-        } else if (row == R + 2 && col == C + 1) {
-            return true;
-        } else if (row == R + 2 && col == C - 1) {
-            return true;
-        }
+        if (Math.abs(deltaR) == 1 && Math.abs(deltaC) == 2) return true;
+        if (Math.abs(deltaR) == 2 && Math.abs(deltaC) == 1) return true;
 
         return false;
     }

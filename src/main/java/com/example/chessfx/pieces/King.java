@@ -1,11 +1,12 @@
 package com.example.chessfx.pieces;
 
+import com.example.chessfx.Board;
 import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
 public class King extends Piece {
-    public King(Tile[][] board, Tile t, Player color) {
-        super(board, t, PieceType.KING, color);
+    public King(Board b, Tile t, Player color) {
+        super(b, t, PieceType.KING, color);
     }
 
     @Override

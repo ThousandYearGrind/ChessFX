@@ -12,6 +12,8 @@ public class Board {
     private final Pane pane;
     private final Draw d;
     private final Tile[][] board;
+    private Tile enPassantTile;
+    private Piece enPassantPiece;
 
     /**
      * set the pane to display in
@@ -59,33 +61,33 @@ public class Board {
                 if (row == 0) {
                     // white back rank
                     if (col == 0 || col == 7)
-                        t.setPiece(new Rook(board, t, Player.WHITE));
+                        t.setPiece(new Rook(this, t, Player.WHITE));
                     else if (col == 1 || col == 6)
-                        t.setPiece(new Knight(board, t, Player.WHITE));
+                        t.setPiece(new Knight(this, t, Player.WHITE));
                     else if (col == 2 || col == 5)
-                        t.setPiece(new Bishop(board, t, Player.WHITE));
+                        t.setPiece(new Bishop(this, t, Player.WHITE));
                     else if (col == 3)
-                        t.setPiece(new King(board, t, Player.WHITE));
+                        t.setPiece(new King(this, t, Player.WHITE));
                     else
-                        t.setPiece(new Queen(board, t, Player.WHITE));
+                        t.setPiece(new Queen(this, t, Player.WHITE));
                 } else if (row == 1) {
                     // white pawns
-                    t.setPiece(new Pawn(board, t, Player.WHITE));
+                    t.setPiece(new Pawn(this, t, Player.WHITE));
                 } else if (row == 6) {
                     // black pawns
-                    t.setPiece(new Pawn(board, t, Player.BLACK));
+                    t.setPiece(new Pawn(this, t, Player.BLACK));
                 } else if (row == 7) {
                     // black back rank
                     if (col == 0 || col == 7)
-                        t.setPiece(new Rook(board, t, Player.BLACK));
+                        t.setPiece(new Rook(this, t, Player.BLACK));
                     else if (col == 1 || col == 6)
-                        t.setPiece(new Knight(board, t, Player.BLACK));
+                        t.setPiece(new Knight(this, t, Player.BLACK));
                     else if (col == 2 || col == 5)
-                        t.setPiece(new Bishop(board, t, Player.BLACK));
+                        t.setPiece(new Bishop(this, t, Player.BLACK));
                     else if (col == 3)
-                        t.setPiece(new King(board, t, Player.BLACK));
+                        t.setPiece(new King(this, t, Player.BLACK));
                     else
-                        t.setPiece(new Queen(board, t, Player.BLACK));
+                        t.setPiece(new Queen(this, t, Player.BLACK));
                 }
             }
         }
@@ -114,6 +116,26 @@ public class Board {
      */
     public Tile[][] getBoard() {
         return board;
+    }
+
+    public void setEnPassant(Pawn p, Tile t) {
+        enPassantPiece = p;
+        enPassantTile = t;
+    }
+
+    public void resetEnPassant(Tile t) {
+        if (enPassantTile == null) return;
+        if (t == enPassantTile) {
+            enPassantPiece.getTile().setPiece(null);
+            enPassantTile = null;
+        } else {
+            enPassantPiece = null;
+            enPassantTile = null;
+        }
+    }
+
+    public boolean isEnPassantTile(Tile t) {
+        return t == enPassantTile;
     }
 
     private class Draw {
