@@ -14,10 +14,10 @@ public abstract class Piece {
      * move the piece (capture if there is an enemy piece is there)
      */
 
-    private final Tile[][] board;
-    private Tile tile;
-    private final Player color;
-    private final PieceType type;
+    protected final Tile[][] board;
+    protected Tile tile;
+    protected final Player color;
+    protected final PieceType type;
 
     /**
      * @param board the 2D Tile array that contains the Tile that the Piece is in
@@ -39,7 +39,7 @@ public abstract class Piece {
     }
 
     protected boolean sameColor(Piece other) {
-        return other.color == this.color;
+        return other != null && other.color == this.color;
     }
 
     public void move(int row, int col) {
@@ -48,6 +48,10 @@ public abstract class Piece {
         target.setPiece(this);
         tile.setPiece(null);
         tile = target;
+    }
+
+    protected boolean isOccupied(int row, int col) {
+        return piece(row, col) != null;
     }
 
     public Player getColor() {

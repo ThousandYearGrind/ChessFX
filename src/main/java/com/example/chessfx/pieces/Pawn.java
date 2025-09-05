@@ -4,16 +4,49 @@ import com.example.chessfx.Player;
 import com.example.chessfx.Tile;
 
 public class Pawn extends Piece {
+
+    private boolean firstMove;
+    private int direction;
+
     public Pawn(Tile[][] board, Tile tile, Player color) {
         super(board, tile, PieceType.PAWN, color);
+        direction = color == Player.WHITE ? 1 : -1;
+        firstMove = true;
     }
 
     // TODO: implement canMove() in Pawn
     @Override
-    public boolean canMove(int row, int col) {
+    protected boolean canMove(int row, int col) {
         Piece target = piece(row, col);
         if (sameColor(target)) return false;
-        return true;
+
+        if (row == tile.getRow() + 2 * direction && col == tile.getCol()) {
+            return !(isOccupied(row, col) || isOccupied(row - 1, col));
+        } else if (row == tile.getRow() + direction && col == tile.getCol()) {
+            return !isOccupied(row, col);
+        } else if (row == tile.getRow() + direction && Math.abs(col - tile.getCol()) == 1) {
+            return isOccupied(row, col);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void move(int row, int col) {
+        super.move(row, col);
+        if (color == Player.WHITE && tile.getRow() == 7) {
+            promote();
+        }
+
+        if (color == Player.BLACK && tile.getRow() == 0) {
+            promote();
+        }
+    }
+
+    // TODO: Fully implement promote
+    private void promote() {
+        Tile cur = board[tile.getRow()][tile.getCol()];
+        cur.setPiece(new Queen(board, tile, color));
     }
 
     @Override

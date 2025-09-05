@@ -9,6 +9,7 @@ public class Tile {
     private static int width = 100;
     private boolean isDark;
     private Piece piece;
+    private int row, col;
 
     /* functionality
      * get the color of the tile
@@ -17,6 +18,8 @@ public class Tile {
      */
 
     public Tile(boolean isDark, int row, int col) {
+        this.row = row;
+        this.col = col;
         this.isDark = isDark;
     }
 
@@ -30,6 +33,14 @@ public class Tile {
 
     public Piece getPiece() {
         return piece;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
     }
 
     public static int getWidth() {
