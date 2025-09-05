@@ -57,11 +57,12 @@ public abstract class Piece {
     public PieceType getType() {
         return type;
     }
-
+/*
+maybe use later
     public Tile getTile() {
         return tile;
     }
-
+ */
     @Override
     public String toString() {
         return "X";
