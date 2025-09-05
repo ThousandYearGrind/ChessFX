@@ -10,7 +10,9 @@ public class Queen extends Piece {
 
     @Override
     public boolean canMove(int row, int col) {
-        return false;
+        Piece target = piece(row, col);
+        if (sameColor(target)) return false;
+        return true;
     }
 
     @Override

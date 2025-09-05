@@ -32,10 +32,14 @@ public abstract class Piece {
         this.type = type;
     }
 
-    public boolean canMove(int row, int col) {
-        Piece target = board[row][col].getPiece();
-        if (target != null) System.out.println(target.toString());
-        return target == null || target.color != color;
+    protected abstract boolean canMove(int row, int col);
+
+    protected Piece piece(int row, int col) {
+        return board[row][col].getPiece();
+    }
+
+    protected boolean sameColor(Piece other) {
+        return other.color == this.color;
     }
 
     public boolean move(int row, int col) {
