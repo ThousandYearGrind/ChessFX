@@ -10,9 +10,9 @@ public class King extends Piece {
 
     @Override
     public boolean canMove(int row, int col) {
-        Piece target = piece(row, col);
-        if (sameColor(target)) return false;
-        return true;
+        if (!super.canMove(row, col)) return false;
+
+        return false;
     }
 
     @Override

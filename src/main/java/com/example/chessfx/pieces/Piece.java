@@ -32,7 +32,12 @@ public abstract class Piece {
         this.type = type;
     }
 
-    protected abstract boolean canMove(int row, int col);
+    protected boolean canMove(int row, int col) {
+        if (row < 0 || row >= 8 || col < 0 || col >= 8) return false;
+        Piece target = piece(row, col);
+        if (sameColor(target)) return false;
+        return true;
+    }
 
     protected Piece piece(int row, int col) {
         return board[row][col].getPiece();

@@ -5,6 +5,7 @@ import com.example.chessfx.Tile;
 
 public class Pawn extends Piece {
 
+    // TODO: figure out en passant
     private boolean firstMove;
     private int direction;
 
@@ -17,11 +18,10 @@ public class Pawn extends Piece {
     // TODO: implement canMove() in Pawn
     @Override
     protected boolean canMove(int row, int col) {
-        Piece target = piece(row, col);
-        if (sameColor(target)) return false;
+        if (!super.canMove(row, col)) return false;
 
         if (row == tile.getRow() + 2 * direction && col == tile.getCol()) {
-            return !(isOccupied(row, col) || isOccupied(row - 1, col));
+            return !(isOccupied(row, col) || isOccupied(row - direction, col));
         } else if (row == tile.getRow() + direction && col == tile.getCol()) {
             return !isOccupied(row, col);
         } else if (row == tile.getRow() + direction && Math.abs(col - tile.getCol()) == 1) {

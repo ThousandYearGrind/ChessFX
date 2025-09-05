@@ -11,9 +11,30 @@ public class Knight extends Piece {
 
     @Override
     public boolean canMove(int row, int col) {
-        Piece target = piece(row, col);
-        if (sameColor(target)) return false;
-        return true;
+        if (!super.canMove(row, col)) return false;
+
+        int R = tile.getRow();
+        int C = tile.getCol();
+
+        if (row == R - 1 && col == C + 2) {
+            return true;
+        } else if (row == R - 1 && col == C - 2) {
+            return true;
+        } else if (row == R + 1 && col == C + 2) {
+            return true;
+        } else if (row == R + 1 && col == C - 2) {
+            return true;
+        } else if (row == R - 2 && col == C + 1) {
+            return true;
+        } else if (row == R - 2 && col == C - 1) {
+            return true;
+        } else if (row == R + 2 && col == C + 1) {
+            return true;
+        } else if (row == R + 2 && col == C - 1) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
