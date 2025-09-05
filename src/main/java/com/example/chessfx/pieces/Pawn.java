@@ -38,7 +38,8 @@ public class Pawn extends Piece {
         super.move(row, col);
 
         if (enPassant) {
-            b.setEnPassant(this, board[row-direction][col]);
+            b.setEnPassant(this, board[row - direction][col]);
+            enPassant = false;
         }
 
         firstMove = false;
