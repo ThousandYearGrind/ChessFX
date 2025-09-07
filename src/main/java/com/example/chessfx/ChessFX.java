@@ -1,6 +1,7 @@
 package com.example.chessfx;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -14,11 +15,12 @@ public class ChessFX extends Application {
     public void start(Stage stage) {
         BorderPane pane = new BorderPane();
         pane.setBackground(Background.fill(Color.BLACK));
-        Scene scene = new Scene(pane, 1000, 800);
+        Scene scene = new Scene(pane, 1000, 900);
         Board b = new Board(pane);
 
         stage.setScene(scene);
         stage.setResizable(true);
+        stage.setTitle("ChessFX");
         stage.show();
     }
 

@@ -7,7 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -17,7 +17,7 @@ public class Pawn extends Piece {
 
     private boolean firstMove;
     private boolean enPassant;
-    private int direction;
+    private final int direction;
     private final PieceType[] promoted = new PieceType[1];
 
     public Pawn(Board b, Tile t, Player color) {
@@ -29,6 +29,7 @@ public class Pawn extends Piece {
     @Override
     public boolean canMove(int row, int col) {
         if (!super.canMove(row, col)) return false;
+        if (b.isPromoting()) return false;
         if (firstMove && row == tile.getRow() + 2 * direction && col == tile.getCol()) {
             enPassant = true;
             return !(isOccupied(row, col) || isOccupied(row - direction, col));
@@ -43,7 +44,22 @@ public class Pawn extends Piece {
 
     @Override
     public void move(int row, int col) {
-        super.move(row, col);
+        if (!canMove(row, col)) {
+            b.draw();
+            return;
+        }
+        Tile target = board[row][col];
+
+        if (type == PieceType.PAWN) {
+            ((Pawn) this).setMoved();
+            b.resetEnPassant(target);
+        } else {
+            b.resetEnPassant(null);
+        }
+
+        target.setPiece(this);
+        tile.setPiece(null);
+        tile = target;
 
         if (enPassant) {
             b.setEnPassant(this, board[row - direction][col]);
@@ -51,24 +67,37 @@ public class Pawn extends Piece {
         }
 
         if (color == Player.WHITE && tile.getRow() == 7 || color == Player.BLACK && tile.getRow() == 0) {
-            promotions(color);
+            b.startPromoting();
+            promotion(color);
+        } else {
+            b.nextToMove();
         }
+
+        b.draw();
     }
 
     public void setMoved() {
         firstMove = false;
     }
-    public void promotions(Player color) {
+
+    private void promote(Piece p, Pane promotionPane) {
+        System.out.println("PROMOTE");
+        p.getTile().setPiece(p);
+        promotionPane.getChildren().clear();
+        b.nextToMove();
+        b.promoted();
+        b.draw();
+    }
+
+    public void promotion(Player color) {
         VBox promotionPane = new VBox();
         String c = color.toString().toLowerCase().substring(0,1);
-        ImageView K = new ImageView(String.valueOf(this.getClass().getResource("/pieceImages/" +
+        ImageView N = new ImageView(String.valueOf(this.getClass().getResource("/pieceImages/" +
                 c + "-knight.png")));
-        K.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        N.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                tile.setPiece(new Knight(b, tile, color));
-                promotionPane.getChildren().clear();
-                b.draw();
+                promote(new Knight(b, tile, color), promotionPane);
             }
         });
         ImageView B = new ImageView(String.valueOf(this.getClass().getResource("/pieceImages/" +
@@ -76,9 +105,7 @@ public class Pawn extends Piece {
         B.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                tile.setPiece(new Bishop(b, tile, color));
-                promotionPane.getChildren().clear();
-                b.draw();
+                promote(new Bishop(b, tile, color), promotionPane);
             }
         });
         ImageView R = new ImageView(String.valueOf(this.getClass().getResource("/pieceImages/" +
@@ -86,9 +113,7 @@ public class Pawn extends Piece {
         R.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                tile.setPiece(new Rook(b, tile, color));
-                promotionPane.getChildren().clear();
-                b.draw();
+                promote(new Rook(b, tile, color), promotionPane);
             }
         });
         ImageView Q = new ImageView(String.valueOf(this.getClass().getResource("/pieceImages/" +
@@ -96,15 +121,12 @@ public class Pawn extends Piece {
         Q.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                tile.setPiece(new Queen(b, tile, color));
-                promotionPane.getChildren().clear();
-                b.draw();
+                promote(new Queen(b, tile, color), promotionPane);
             }
         });
-        promotionPane.getChildren().addAll(K, B, R, Q);
+        promotionPane.getChildren().addAll(N, B, R, Q);
         promotionPane.setBackground(Background.fill(Color.BEIGE));
         b.pane.setRight(promotionPane);
-        b.pane.getRight().autosize();
     }
 //
 //    public PieceType promote(Player color) {

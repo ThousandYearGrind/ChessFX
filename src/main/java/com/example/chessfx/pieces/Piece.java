@@ -37,8 +37,8 @@ public abstract class Piece {
 
     public boolean canMove(int row, int col) {
         if (row < 0 || row >= 8 || col < 0 || col >= 8) return false;
+        if (! b.hasMove(this.color)) return false;
         Piece target = piece(row, col);
-        System.out.println(sameColor(target));
         if (sameColor(target)) return false;
         return true;
     }
@@ -68,7 +68,7 @@ public abstract class Piece {
         target.setPiece(this);
         tile.setPiece(null);
         tile = target;
-
+        b.nextToMove();
         b.draw();
     }
 

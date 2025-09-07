@@ -2,10 +2,11 @@ package com.example.chessfx;
 
 import com.example.chessfx.pieces.*;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,13 +21,32 @@ public class Board {
     private Tile enPassantTile;
     private Piece enPassantPiece;
 
-    private Pane image;
+    private final VBox boardPane;
+    private final Pane image;
     private double originX = 0;
     private double originY = 0;
 
+    private TurnLabel turnLabel;
+    private int turn = 1;
+    private Player toMove = Player.WHITE;
+    public void nextToMove() {
+        if (toMove == Player.WHITE) {
+            toMove = Player.BLACK;
+        } else {
+            ++turn;
+            toMove = Player.WHITE;
+        }
+    }
 
+    private boolean promoting;
+    public void startPromoting() { promoting = true; }
+    public boolean isPromoting() {return promoting;}
+    public void promoted() { promoting = false; }
     //TODO: implement check
     //TODO: implement checkmate
+    //TODO: implement turns
+    //TODO: implement stalemate
+    //TODO: implement castling
 
     /**
      * set the pane to display in
@@ -35,14 +55,19 @@ public class Board {
      * @param pane - the pane the board will be displayed in
      */
     public Board(BorderPane pane) {
+        Player hasMove = Player.WHITE;
         this.pane = pane;
         board = new Tile[8][8];
-        // Draw must be constructed after board is initialized (has a reference to board
+        // Draw must be constructed after board is initialized (has a reference to board)
         this.d = new Draw();
         initTiles();
         initPieces();
-        image = new Pane();
-        pane.setCenter(image);
+        boardPane = new VBox();
+        boardPane.setMaxWidth(Tile.getWidth() * 8);
+        turnLabel = new TurnLabel();
+        boardPane.getChildren().add(turnLabel.getPane());
+        boardPane.getChildren().add(image = new Pane());
+        pane.setCenter(boardPane);
         draw();
     }
 
@@ -113,11 +138,10 @@ public class Board {
      * > add each element in the board again to reflect any changes that were made <br>
      */
     public void draw() {
-        ((Pane) pane.getCenter()).getChildren().clear();
-        ((Pane) pane.getCenter()).getChildren().addAll(d.drawBoard());
+        turnLabel.update();
+        image.getChildren().clear();
+        image.getChildren().addAll(d.drawBoard());
     }
-
-
 
     /**
      * @return the 2D array of Tile objects representing the board
@@ -146,8 +170,16 @@ public class Board {
         return t == enPassantTile;
     }
 
-    final MouseEvent[] event = new MouseEvent[1];
-    double mouseX, mouseY;
+    public boolean hasMove(Player p) {
+        return toMove == p;
+    }
+
+    private void findOrigin() {
+        Bounds bounds = image.localToScene(image.getBoundsInParent());
+        originX = bounds.getMinX();
+        originY = bounds.getMinY() / 2;
+    }
+
     private class Draw {
         // make a pane with the board
         Board b = Board.this;
@@ -220,38 +252,55 @@ public class Board {
             for (Node node : s) {
                 node.setOnMousePressed(e -> {
                     node.toFront();
-
-                    Bounds bounds = image.localToScene(image.getBoundsInParent());
-                    originX = bounds.getMinX() / 2;
-                    originY = bounds.getMinY() / 2;
-                    System.out.println(originX);
-                    System.out.println(originY);
-
-                    guiCol = (int) (e.getSceneX() - originX) / Tile.getWidth();
+                    findOrigin();
                     guiRow = (int) (e.getSceneY() - originY) / Tile.getWidth();
+                    guiCol = (int) (e.getSceneX() - originX) / Tile.getWidth();
                     currentPiece = board[guiRow][guiCol].getPiece();
                     endCol = guiCol;
                     endRow = guiRow;
-                    System.out.println(currentPiece);
                     node.setTranslateX(e.getSceneX() - originX - Tile.getWidth()/2.0);
                     node.setTranslateY(e.getSceneY() - originY - Tile.getWidth()/2.0);
-                    System.out.println(guiRow + ":" + guiCol);
                 });
                 node.setOnMouseDragged(e -> {
                     node.setTranslateX(e.getSceneX() - originX - Tile.getWidth()/2.0);
                     node.setTranslateY(e.getSceneY() - originY - Tile.getWidth()/2.0);
                     endRow = (int) (e.getSceneY() - originY) / Tile.getWidth();
                     endCol = (int) (e.getSceneX() - originX) / Tile.getWidth();
-                    System.out.println(endRow + " : " + endCol);
                 });
                 node.setOnMouseReleased(mouseEvent -> {
                     node.setTranslateX(endCol * Tile.getWidth());
                     node.setTranslateY(endRow * Tile.getWidth());
                     currentPiece.move(endRow, endCol);
                     b.draw();
-                    System.out.println(endRow + ":" + endCol);
                 });
             }
+        }
+    }
+
+    private class TurnLabel {
+        private VBox pane;
+        private Label turnLabel;
+
+        public TurnLabel() {
+            pane = new VBox();
+            pane.setBackground(Background.fill(Color.DARKSLATEGRAY));
+            pane.setAlignment(Pos.CENTER);
+            pane.setPadding(new Insets(10,10,10,10));
+
+            turnLabel = new Label(Board.this.toMove.toString() + " TO MOVE");
+            turnLabel.setTextFill(Color.WHITE);
+            pane.getChildren().add(turnLabel);
+
+        }
+
+        public void update() {
+            String end = " TO MOVE";
+            if (promoting) end = " TO PROMOTE";
+            turnLabel.setText(Board.this.toMove.toString() + end);
+        }
+
+        public VBox getPane() {
+            return pane;
         }
     }
 }
