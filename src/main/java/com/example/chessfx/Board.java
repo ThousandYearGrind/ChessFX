@@ -1,7 +1,7 @@
 package com.example.chessfx;
 
 import com.example.chessfx.pieces.*;
-import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,9 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
 
-import static java.lang.Thread.sleep;
+import java.util.List;
 
 public class Board {
 
@@ -20,6 +19,10 @@ public class Board {
     private final Tile[][] board;
     private Tile enPassantTile;
     private Piece enPassantPiece;
+
+    private Pane image;
+    private double originX = 0;
+    private double originY = 0;
 
 
     //TODO: implement check
@@ -36,9 +39,10 @@ public class Board {
         board = new Tile[8][8];
         // Draw must be constructed after board is initialized (has a reference to board
         this.d = new Draw();
-        pane.setCenter(new Pane());
         initTiles();
         initPieces();
+        image = new Pane();
+        pane.setCenter(image);
         draw();
     }
 
@@ -104,22 +108,13 @@ public class Board {
         }
     }
 
-//    public void printBoard() {
-//        for (int i = 0; i < 8; i++) {
-//            for (int j = 0; j < 8; j++) {
-//                System.out.print(board[i][j].getPiece() + " ");
-//            }
-//            System.out.println();
-//        }
-//    }
-
     /**
      * > first clear the current GUI display <br>
      * > add each element in the board again to reflect any changes that were made <br>
      */
     public void draw() {
         ((Pane) pane.getCenter()).getChildren().clear();
-        pane.setCenter(d.drawBoard());
+        ((Pane) pane.getCenter()).getChildren().addAll(d.drawBoard());
     }
 
 
@@ -151,12 +146,14 @@ public class Board {
         return t == enPassantTile;
     }
 
+    final MouseEvent[] event = new MouseEvent[1];
+    double mouseX, mouseY;
     private class Draw {
         // make a pane with the board
         Board b = Board.this;
         Tile[][] board = b.getBoard();
 
-        public Pane drawBoard() {
+        public List<Node> drawBoard() {
             Pane boardImage = new Pane();
             for (int row = 0; row < 8; row++) {
                 for (int col = 0; col < 8; col++) {
@@ -178,7 +175,8 @@ public class Board {
                     }
                 }
             }
-            return boardImage;
+
+            return boardImage.getChildren();
         }
 
         private ImageView drawPiece(Piece p) {
@@ -216,30 +214,41 @@ public class Board {
         private int guiRow, guiCol, endRow, endCol;
         private Piece currentPiece;
 
+        private double dX;
+        private double dY;
         private void makeDraggable(Node... s) {
             for (Node node : s) {
                 node.setOnMousePressed(e -> {
                     node.toFront();
-                    guiCol = (int) e.getSceneX() / 100;
-                    guiRow = (int) e.getSceneY() / 100;
+
+                    Bounds bounds = image.localToScene(image.getBoundsInParent());
+                    originX = bounds.getMinX() / 2;
+                    originY = bounds.getMinY() / 2;
+                    System.out.println(originX);
+                    System.out.println(originY);
+
+                    guiCol = (int) (e.getSceneX() - originX) / Tile.getWidth();
+                    guiRow = (int) (e.getSceneY() - originY) / Tile.getWidth();
                     currentPiece = board[guiRow][guiCol].getPiece();
                     endCol = guiCol;
                     endRow = guiRow;
-                    node.setTranslateX(e.getSceneX() - Tile.getWidth() / 2.0);
-                    node.setTranslateY(e.getSceneY() - Tile.getWidth() / 2.0);
+                    System.out.println(currentPiece);
+                    node.setTranslateX(e.getSceneX() - originX - Tile.getWidth()/2.0);
+                    node.setTranslateY(e.getSceneY() - originY - Tile.getWidth()/2.0);
                     System.out.println(guiRow + ":" + guiCol);
                 });
                 node.setOnMouseDragged(e -> {
-                    node.setTranslateX(e.getSceneX() - Tile.getWidth() / 2.0);
-                    node.setTranslateY(e.getSceneY() - Tile.getWidth() / 2.0);
-                    endRow = (int) e.getSceneY() / 100;
-                    endCol = (int) e.getSceneX() / 100;
+                    node.setTranslateX(e.getSceneX() - originX - Tile.getWidth()/2.0);
+                    node.setTranslateY(e.getSceneY() - originY - Tile.getWidth()/2.0);
+                    endRow = (int) (e.getSceneY() - originY) / Tile.getWidth();
+                    endCol = (int) (e.getSceneX() - originX) / Tile.getWidth();
+                    System.out.println(endRow + " : " + endCol);
                 });
                 node.setOnMouseReleased(mouseEvent -> {
                     node.setTranslateX(endCol * Tile.getWidth());
                     node.setTranslateY(endRow * Tile.getWidth());
                     currentPiece.move(endRow, endCol);
-//                    b.draw();
+                    b.draw();
                     System.out.println(endRow + ":" + endCol);
                 });
             }
